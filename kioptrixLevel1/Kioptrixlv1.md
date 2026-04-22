@@ -96,8 +96,7 @@ Used:
 - sudo -l
 - cat /etc/*release
 - cat /etc/passwd - 28 users identified. 2 relevant non-system users: john (uid500), harold(uid501)
-- cat /etc/shadow - Password hashes obtained for root, john, and harold. Hashes are MD5-crypt (11
-  1) format, susceptible to offline cracking.
+- cat /etc/shadow - Password hashes obtained for root, john, and harold. Hashes are MD5-crypt (1) format, susceptible to offline cracking.
 - cat /root/.bash_history - Attempts to wipe bash history identified
 
 ![postExploitation1](screenshots/post_exploitation1.png)
