@@ -21,9 +21,14 @@ nmap -sV -A -T4 -p22,80,139,443,111,3275 192.168.56.101
 ![nmap_scan](screenshots/nmap_scan.png)
 ![targetIP_scan](screenshots/targetIP_scan.png)
 
-**Thought proccess:**
+**Thought process:**
 > SMB is old, therefore likely vulnerable. Investigate possible found vulnerabilities
-> A test page running on a web server in apache 1.3.20, on port 80, was found (information disclosure - reveals OS and server version). Exploits were available but were not pursued, as the SMB vector offered a more direct path to root
+
+---
+
+### Web server (port 80)
+A test page running on a web server in apache 1.3.20, on port 80, was found (information disclosure - reveals OS and server version). 
+Exploits were available but were not pursued, as the SMB vector offered a more direct path to root
 
 ---
 
@@ -51,9 +56,9 @@ Searched:
 Found:
 - trans2open overflow (CVE-2003-0201)
 
-**Findings: Samba 2.2.1a remote buffer overflow (CVE 2003-0201)**
+**Findings: Samba 2.2.1a remote buffer overflow (CVE-2003-0201)**
 Severity: critical
-Impact: Unauthenticated remote attacker can obtein root-level shell access
+Impact: Unauthenticated remote attacker can obtain root-level shell access
 
 ![smbVersionDetection](screenshots/smbversion_detection.png)
 ![smbVersion](screenshots/smb_version.png)
