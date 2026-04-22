@@ -55,10 +55,10 @@ Found:
 Severity: critical
 Impact: Unauthenticated remote attacker can obtein root-level shell access
 
-![smbVersionDetection](screenshots/smbversion_detection)
-![smbVersion](screenshots/smb_version)
-![trans2openfind](screenshots/samba_trans2open)
-![trans2openMetasploit](screenshots/trans2open_metasploit)
+![smbVersionDetection](screenshots/smbversion_detection.png)
+![smbVersion](screenshots/smb_version.png)
+![trans2openfind](screenshots/samba_trans2open.png)
+![trans2openMetasploit](screenshots/trans2open_metasploit.png)
 **Reasoning:**
 > Samba is known to be exploitable so it is necessary to know which version is being used. SMB 2.2.1a is known to be insecure and have exploited flaws.
 
