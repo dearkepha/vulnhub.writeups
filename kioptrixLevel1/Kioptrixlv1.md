@@ -95,10 +95,10 @@ Used:
   1) format, susceptible to offline cracking.
 - cat /root/.bash_history - Attempts to wipe bash history identified
 
-![postExploitation1](screensots/post_exploitation1.png)
-![postExploitation2](screensots/post_exploitation2.png)
-![postExploitation3](screensots/post_exploitation3.png)
-![postExploitation4](screensots/post_exploitation4.png)
+![postExploitation1](screenshots/post_exploitation1.png)
+![postExploitation2](screenshots/post_exploitation2.png)
+![postExploitation3](screenshots/post_exploitation3.png)
+![postExploitation4](screenshots/post_exploitation4.png)
 
 **Conclusion:**
 - The system was successfully compromised by the trans2open (CVE-2003-0201) exploit. The target system was enumerated and could easily have sensitive info, such as password hashes and systematic behavior exfiltrated. This proves that the target machine is outdated and dangerously insecure.
