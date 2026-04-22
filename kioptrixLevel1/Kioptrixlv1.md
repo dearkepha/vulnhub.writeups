@@ -18,6 +18,9 @@ nmap -sV -A -T4 -p22,80,139,443,111,3275 192.168.56.101
 - 139/tcp
 - 443/tcp (Samba 2.2.1a)
 
+![nmap_scan](screenshots/nmap_scan.png)
+![targetIP_scan](screenshots/targetIP_scan.png)
+
 **Thought proccess:**
 > SMB is old, therefore likely vulnerable. Investigate possible found vulnerabilities
 > A test page running on a web server in apache 1.3.20, on port 80, was found (information disclosure - reveals OS and server version). Exploits were available but were not pursued, as the SMB vector offered a more direct path to root
